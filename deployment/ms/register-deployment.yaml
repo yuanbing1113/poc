@@ -1,0 +1,40 @@
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: bmw-register
+spec:
+  selector:
+    matchLabels:
+      app: bmw-register
+  replicas: 1 # tells deployment to run 1 pods matching the template
+  template:
+    metadata:
+      labels:
+        app: bmw-register
+    spec:
+      containers:
+      - name: bmw-register
+        image: registry.cn-beijing.aliyuncs.com/bmwpoc/register:sit
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 10001
+        env:
+        - name: spring_profiles_active
+          value: k8s 
+      imagePullSecrets: 
+      - name: bmwpoc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bmw-register
+  labels:
+    app: bmw-register
+spec:
+  ports:
+  - port: 10001
+    targetPort: 10001
+    protocol: TCP
+  selector:
+    app: bmw-register
+

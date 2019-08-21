@@ -1,0 +1,72 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/rewrite-target: /
+  name: app-ingress
+spec:
+  rules:
+  - host: bmwpoc.cdkapps.cn
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: ds-web-dev
+          servicePort: 80
+      - path: /console
+        backend:
+          serviceName: sit-bmw-console
+          servicePort: 80
+      - path: /oem
+        backend:
+          serviceName: sit-bmw-oemweb
+          servicePort: 80
+      - path: /dealer
+        backend:
+          serviceName: sit-bmw-dealerweb
+          servicePort: 80
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: ds-web-dev
+spec:
+  type: ExternalName
+  externalName: ds-web-dev.sit.svc.cluster.local
+  ports:
+  - port: 80
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: sit-bmw-console
+spec:
+  type: ExternalName
+  externalName: sit-bmw-console.sit.svc.cluster.local
+  ports:
+  - port: 80
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: sit-bmw-dealerweb
+spec:
+  type: ExternalName
+  externalName: sit-bmw-dealerweb.sit.svc.cluster.local
+  ports:
+  - port: 80
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: sit-bmw-oemweb
+spec:
+  type: ExternalName
+  externalName: sit-bmw-oemweb.sit.svc.cluster.local
+  ports:
+  - port: 80

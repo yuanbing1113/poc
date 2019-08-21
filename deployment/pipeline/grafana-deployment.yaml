@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: grafana
+  name: grafana-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: grafana
+  template:
+    metadata:
+      labels:
+        component: grafana
+    spec:
+      volumes:
+      - name: grafana-claim
+        persistentVolumeClaim:
+          claimName: grafana-claim
+      containers:
+      - name: grafana
+        image: pharosproduction/grafana:6
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 3000
+        resources:
+          limits:
+            cpu: 500m
+            memory: 2500Mi
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        volumeMounts:
+        - mountPath: /var/lib/grafana
+          name: grafana-claim
+        env:
+        - name: GF_INSTALL_PLUGINS
+          value: "grafana-kubernetes-app"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana-service
+  annotations:
+      prometheus.io/scrape: 'true'
+      prometheus.io/path:   /metrics
+      prometheus.io/port:   '3000'
+ 
+spec:
+  type: NodePort 
+  selector:
+    component: grafana
+  ports:
+  - port: 3000
+    targetPort: 3000
+    nodePort: 30300

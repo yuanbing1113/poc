@@ -1,0 +1,27 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: sonar-postgresql
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: sonar-postgresql
+    spec:
+      containers:
+        - name: sonar-postgresql
+          image: postgres:latest
+          imagePullPolicy: "IfNotPresent"
+          ports:
+            - containerPort: 5432
+          envFrom:
+            - configMapRef:
+                name: sonar-postgresql-config
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: postgredb
+      volumes:
+        - name: postgredb
+          persistentVolumeClaim:
+            claimName: sonar-db-pv-claim

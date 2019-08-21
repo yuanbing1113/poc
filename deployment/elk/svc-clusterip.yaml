@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: elasticsearch
+spec:
+  selector:
+    app: es-cluster
+  ports:
+  - name: http
+    port: 9200
+    targetPort: 9200
+  type: ClusterIP
+
+
+

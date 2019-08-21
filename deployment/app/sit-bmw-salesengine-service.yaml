@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: sit-bmw-salesengine
+spec:
+  type: ClusterIP
+  ports:
+    - port: 20099
+      targetPort: 20099
+  selector:
+    app: sit-bmw-salesengine

@@ -1,0 +1,31 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/rewrite-target: /
+  name: app-ingress
+spec:
+  rules:
+  - host: bmwpoc.cdkapps.cn
+    http:
+      paths:
+      - path: /app1
+        backend:
+          serviceName: appsvc1
+          servicePort: 80
+      - path: /devops
+        backend:
+          serviceName: jenkins
+          servicePort: 8080
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: jenkins
+spec:
+  type: ExternalName
+  externalName: jenkins.jenkins.svc.cluster.local
+  ports:
+  - port: 8080

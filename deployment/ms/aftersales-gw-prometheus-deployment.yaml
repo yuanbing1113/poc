@@ -1,0 +1,45 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: aftersales-gw-prometheus-server
+  namespace: sit
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: aftersales-gw-prometheus-server
+    spec:
+      containers:
+        - name: aftersales-gw-prometheus-server
+          image: prom/prometheus:v2.2.1
+          args:
+            - "--config.file=/etc/prometheus/prometheus.yml"
+            - "--storage.tsdb.path=/prometheus/"
+          ports:
+            - containerPort: 9090
+          volumeMounts:
+            - name: aftersales-gw-config-volume
+              mountPath: /etc/prometheus/
+            - name: prometheus-storage-volume
+              mountPath: /prometheus/
+      volumes:
+        - name: aftersales-gw-config-volume
+          configMap:
+            defaultMode: 420
+            name: prometheus-aftersales-gw-conf
+        - name: prometheus-storage-volume
+          emptyDir: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: aftersales-gw-prometheus-server
+  namespace: sit
+spec:
+  selector: 
+    app: aftersales-gw-prometheus-server
+  ports:
+    - port: 9090
+      targetPort: 9090
